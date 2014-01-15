@@ -9,7 +9,7 @@ data Group = Group { idG :: String
 				   , capabilities :: [Capability]
 					}deriving (Show)
 					
-data Device = Device { id :: String
+data Device = Device { idD :: String
                      , user_agent :: String
 					 , fall_back :: String
 					 , groups ::[Group]
@@ -67,7 +67,8 @@ crearListaDevices []  = []
 crearListaDevices listaString  = (crearDeviceString device) ++ (crearListaDevices resto)
 		where (device, resto)=cogerDeviceString listaString
 {---------------------------------------------------------------------------------------------------------------------------------------------------------------}
-		
+
+
 
 cogerGroupString :: [String] -> ( [String] , [String] )
 cogerGroupString [] = ([],[])
@@ -113,5 +114,16 @@ esEspacio :: Char -> Bool
 esEspacio c             =  c == '<'     ||
                            c == '>'
 						   
+{--------------------------------------------------------------------------------------------------------------------------------------------------------------}
+{- FUNCIONES DE BUSQUEDA -}
 
-						   
+reconocerCapability:: Capability -> String -> [Capability]
+reconocerCapability (Capability name value) cadena
+				| ( name==cadena || value==cadena ) = [Capability name value]
+			    | otherwise =[]
+
+buscarCapability:: [Capability] -> String -> Bool
+buscarCapability [] cadena = False
+buscarCapability (cap1:restCap) cadena 
+			| reconocerCapability cap1 cadena = True
+			| otherwise = buscarCapability restCap cadena
