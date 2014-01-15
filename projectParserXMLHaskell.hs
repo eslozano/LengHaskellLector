@@ -117,13 +117,59 @@ esEspacio c             =  c == '<'     ||
 {--------------------------------------------------------------------------------------------------------------------------------------------------------------}
 {- FUNCIONES DE BUSQUEDA -}
 
-reconocerCapability:: Capability -> String -> [Capability]
-reconocerCapability (Capability name value) cadena
-				| ( name==cadena || value==cadena ) = [Capability name value]
-			    | otherwise =[]
+--COMIENZA BUSQUEDA CAPABILITY
+buscarCapability:: [Capability] -> String -> ( Bool, [Capability] )
+buscarCapability [] cadena = ( False , [] )
+buscarCapability (x:xs) cadena 
+			| name x == cadena = ( True , [x] )
+			| otherwise = buscarCapability xs cadena
+			
+buscarCapenGroup :: Group -> String -> ( Bool, [Capability] )
+buscarCapenGroup (Group _ caps ) cadena = buscarCapability caps cadena
 
-buscarCapability:: [Capability] -> String -> Bool
-buscarCapability [] cadena = False
-buscarCapability (cap1:restCap) cadena 
-			| reconocerCapability cap1 cadena = True
-			| otherwise = buscarCapability restCap cadena
+buscarCapabilityenGroups :: [Group] -> String -> ( Bool, [Capability] )
+buscarCapabilityenGroups [] cadena = ( False , [] )
+buscarCapabilityenGroups (x:xs) cadena 
+			| found = (found,cap)
+			| otherwise = buscarCapabilityenGroups xs cadena
+			where (found,cap) = buscarCapenGroup x cadena
+
+buscarCapenDevice :: Device -> String -> ( Bool, [Capability])
+buscarCapenDevice (Device _ _ _ grupos) cadena = buscarCapabilityenGroups grupos cadena
+--TERMINA BUSQUEDA CAPABILITY
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+--FUNCIONES APRA OBTENER EL VALOR DE UNA CAPABILITY COMO STRING, INT, FLOAT O BOOL
+
+obtenerString :: ( Bool, [Capability]) -> String
+obtenerString ( True , cap ) = value(cap!!0)
+obtenerString (_,_) = ""
+
+obtenerInt :: ( Bool, [Capability]) -> Int
+obtenerInt ( True , cap ) = read (value(cap!!0))::Int 
+obtenerInt (_,_) = 0
+
+obtenerFloat :: ( Bool, [Capability]) -> Float
+obtenerFloat ( True , cap ) = read (value(cap!!0))::Float 
+obtenerFloat (_,_) = 0
+
+obtenerBool :: ( Bool, [Capability]) -> Bool
+obtenerBool ( True , cap ) = read (value(cap!!0))::Bool 
+obtenerBool (_,_) = False
+
+{--------------------------------------------------------------------------------------------------------------------------------------------------------------}
+-- FUNCIONES DE CONSULTA
+
+
+
+buscarFloatDevice :: Device -> String -> Float
+buscarFloatDevice dev clave = obtenerFloat $buscarCapenDevice dev clave
+
+buscarBoolDevice :: Device -> String -> Bool
+buscarBoolDevice dev clave = obtenerBool $buscarCapenDevice dev clave
+
+buscarCapNameValueEnDevice:: [Device] -> String -> String-> [Device]
+buscarCapNameValueEnDevice devs nam val = [x|x <- devs , buscarStringDevice x nam == val ]
+
+
