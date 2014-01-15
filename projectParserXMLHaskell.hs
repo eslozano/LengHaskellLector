@@ -147,7 +147,7 @@ buscarGroupDevice cadena ( Device _ _ _ grupos) = buscarGroup grupos cadena
 buscarGroup ::[Group]-> String-> Bool
 buscarGroup [] _ = False
 buscarGroup (x:xs) cadena = idG x == cadena || buscarGroup xs cadena  
-
+--TERMINA BUSQUEDA GROUP
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 --FUNCIONES APRA OBTENER EL VALOR DE UNA CAPABILITY COMO STRING, INT, FLOAT O BOOL
 
@@ -168,7 +168,8 @@ obtenerBool ( True , cap ) = read (value(cap!!0))::Bool
 obtenerBool (_,_) = False
 
 {--------------------------------------------------------------------------------------------------------------------------------------------------------------}
--- FUNCIONES DE CONSULTA
+-- FUNCIONES DE CONSULTA 
+--CUANDO NECESITE SOLO ENVIAR UN DEVICE Y EL NOMBRE ME RETORNA EL VALUE DE LA CAPABILITY
 
 buscarStringDevice :: Device -> String -> String
 buscarStringDevice dev clave = obtenerString $buscarCapenDevice dev clave
@@ -182,9 +183,16 @@ buscarFloatDevice dev clave = obtenerFloat $buscarCapenDevice dev clave
 buscarBoolDevice :: Device -> String -> Bool
 buscarBoolDevice dev clave = obtenerBool $buscarCapenDevice dev clave
 
-buscarCapNameValueEnDevice:: [Device] -> String -> String-> [Device]
-buscarCapNameValueEnDevice devs nam val = [x|x <- devs , buscarStringDevice x nam == val ]
+-- BUSCAR LA CAPABILITY EN UN DEVICE
+buscarCapNameValueStringEnDevice:: [Device] -> String -> String-> [Device]
+buscarCapNameValueStringEnDevice devs nam val = [x|x <- devs , buscarStringDevice x nam == val ]
 
+buscarCapNameValueIntEnDevice:: [Device] -> String -> Int -> [Device]
+buscarCapNameValueIntEnDevice devs nam val = [x|x <- devs , buscarIntDevice x nam == val ]
+
+--BUSCAR UN GRUPO POR SU ID EN UN DEVICE, DEVOLVIENDO TODOS LOS DEVICE QUE TIENEN ESE GRUPO
+buscarGrIdEnDevice:: [Device] -> String -> [Device]
+buscarGrIdEnDevice devs idGroup = [ x | x <- devs, buscarGroup (groups x) idGroup  ]
 
 {--------------------------------------------------------------------------------------------------------------------------------------------------------------}
 
