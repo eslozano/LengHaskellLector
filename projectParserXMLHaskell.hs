@@ -1,3 +1,5 @@
+
+--GITHUB
 import Data.List.Split	
 import Data.List
 
@@ -138,6 +140,13 @@ buscarCapenDevice :: Device -> String -> ( Bool, [Capability])
 buscarCapenDevice (Device _ _ _ grupos) cadena = buscarCapabilityenGroups grupos cadena
 --TERMINA BUSQUEDA CAPABILITY
 
+--COMIENZA BUSQUEDA GROUP
+buscarGroupDevice:: String -> Device-> Bool 
+buscarGroupDevice cadena ( Device _ _ _ grupos) = buscarGroup grupos cadena 
+
+buscarGroup ::[Group]-> String-> Bool
+buscarGroup [] _ = False
+buscarGroup (x:xs) cadena = idG x == cadena || buscarGroup xs cadena  
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 --FUNCIONES APRA OBTENER EL VALOR DE UNA CAPABILITY COMO STRING, INT, FLOAT O BOOL
@@ -161,7 +170,11 @@ obtenerBool (_,_) = False
 {--------------------------------------------------------------------------------------------------------------------------------------------------------------}
 -- FUNCIONES DE CONSULTA
 
+buscarStringDevice :: Device -> String -> String
+buscarStringDevice dev clave = obtenerString $buscarCapenDevice dev clave
 
+buscarIntDevice :: Device -> String -> Int
+buscarIntDevice dev clave = obtenerInt $buscarCapenDevice dev clave
 
 buscarFloatDevice :: Device -> String -> Float
 buscarFloatDevice dev clave = obtenerFloat $buscarCapenDevice dev clave
@@ -173,3 +186,7 @@ buscarCapNameValueEnDevice:: [Device] -> String -> String-> [Device]
 buscarCapNameValueEnDevice devs nam val = [x|x <- devs , buscarStringDevice x nam == val ]
 
 
+{--------------------------------------------------------------------------------------------------------------------------------------------------------------}
+
+showDeviceCorto :: Device -> String 
+showDeviceCorto dev = "Device id:"  ++ idD dev ++ ", user_agent:" ++ user_agent dev
