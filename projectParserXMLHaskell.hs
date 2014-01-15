@@ -75,26 +75,28 @@ crearListaDevices listaString  = (crearDeviceString device) ++ (crearListaDevice
 cogerGroupString :: [String] -> ( [String] , [String] )
 cogerGroupString [] = ([],[])
 cogerGroupString (x:xs) 
-			| reconocerString x == GrBegin = cogerGroupString' (x:xs) [] 
+			| reconocerString x == GrBegin = cogerGroupString' (xs) [x] 
 			| otherwise = cogerGroupString xs
 
 cogerGroupString' :: [String] -> [String] ->  ( [String] , [String] )
 cogerGroupString' [] listaGrupo  = ( listaGrupo , [])
 cogerGroupString' (x:xs) listaGrupo
 					| reconocerString x == GrEnd = ( (listaGrupo ++ [x]) , xs)
+					| reconocerString x == GrBegin = ( listaGrupo , (x:xs) )
 					| otherwise = cogerGroupString' xs (listaGrupo ++ [x])
 
 {- Esta funcion parte la lista y retorna el primer device y el resto de la cadena en una dupla -} 
 cogerDeviceString :: [String] -> ( [String] , [String] )
 cogerDeviceString [] = ([],[])
 cogerDeviceString (x:xs) 
-			| reconocerString x == DevBegin = cogerDeviceString' (x:xs) [] 
+			| reconocerString x == DevBegin = cogerDeviceString' (xs) [x] 
 			| otherwise = cogerDeviceString xs
 
 cogerDeviceString' :: [String] -> [String] ->  ( [String] , [String] )
 cogerDeviceString' [] listaDevice  = ( listaDevice , [])
 cogerDeviceString' (x:xs) listaDevice
 					| reconocerString x == DevEnd = ( (listaDevice ++ [x]) , xs)
+					| reconocerString x == DevBegin = ( listaDevice , (x:xs) )
 					| otherwise = cogerDeviceString' xs (listaDevice ++ [x])							
 					
 {- Esta funcion se encarga de agregar la lista de capalities al group correespondiente -} 
@@ -164,7 +166,7 @@ obtenerFloat ( True , cap ) = read (value(cap!!0))::Float
 obtenerFloat (_,_) = 0
 
 obtenerBool :: ( Bool, [Capability]) -> Bool
-obtenerBool ( True , cap ) = read (value(cap!!0))::Bool 
+obtenerBool ( True , cap ) =  (value(cap!!0)) == "true"
 obtenerBool (_,_) = False
 
 {--------------------------------------------------------------------------------------------------------------------------------------------------------------}
